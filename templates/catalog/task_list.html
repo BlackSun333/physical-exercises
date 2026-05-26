@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html>
 <body>
-
+  <h1>Tasks</h1>
+  <a href="{% url 'task-create' %}">+ New Task</a>
+  <ul>
+    {% for task in object_list %}
+      <li>
+        <a href="{% url 'task-detail' task.pk %}">{{ task }}</a>
+        — {{ task.priority }} | {{ task.deadline }}
+      </li>
+    {% endfor %}
+  </ul>
 </body>
 </html>

@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html>
 <body>
-
+  <h1>Workers</h1>
+  <a href="{% url 'worker-create' %}">+ New Worker</a>
+  <ul>
+    {% for worker in object_list %}
+      <li>
+        <a href="{% url 'worker-detail' worker.pk %}">{{ worker }}</a>
+        — {{ worker.position }}
+      </li>
+    {% endfor %}
+  </ul>
 </body>
 </html>

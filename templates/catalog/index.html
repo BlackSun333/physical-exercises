@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html>
 <body>
-
+  <h1>IT Task Manager</h1>
+  <p>Tasks: {{ task_count }}</p>
+  <p>Completed: {{ completed_tasks }}</p>
+  <p>Workers: {{ worker_count }}</p>
+  <a href="{% url 'task-list' %}">Tasks</a> |
+  <a href="{% url 'worker-list' %}">Workers</a>
 </body>
 </html>
