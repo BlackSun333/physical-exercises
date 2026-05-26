@@ -2,10 +2,21 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Task, Worker, TaskType
 from .forms import TaskForm, WorkerCreationForm, WorkerUpdateForm
+
+
+class ManagerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        user = self.request.user
+        return (
+            user.is_authenticated
+            and user.position is not None
+            and user.position.name.lower() == "manager"
+        )
 
 
 def index(request):
@@ -18,8 +29,6 @@ def index(request):
     return render(request, "catalog/index.html", context)
 
 
-# Auth Views
-
 class WorkerLoginView(LoginView):
     template_name = "catalog/login.html"
     redirect_authenticated_user = True
@@ -28,8 +37,6 @@ class WorkerLoginView(LoginView):
 class WorkerLogoutView(LogoutView):
     next_page = "login"
 
-
-# Task Views
 
 class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
@@ -57,8 +64,6 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("task-list")
 
 
-# Worker Views
-
 class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
     paginate_by = 10
@@ -68,18 +73,18 @@ class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
 
 
-class WorkerCreateView(generic.CreateView):
+class WorkerCreateView(ManagerRequiredMixin, generic.CreateView):
     model = Worker
     form_class = WorkerCreationForm
-    success_url = reverse_lazy("login")
+    success_url = reverse_lazy("worker-list")
 
 
-class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
+class WorkerUpdateView(ManagerRequiredMixin, generic.UpdateView):
     model = Worker
     form_class = WorkerUpdateForm
     success_url = reverse_lazy("worker-list")
 
 
-class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
+class WorkerDeleteView(ManagerRequiredMixin, generic.DeleteView):
     model = Worker
     success_url = reverse_lazy("worker-list")
