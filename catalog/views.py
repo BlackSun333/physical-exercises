@@ -15,7 +15,6 @@ def index(request):
     return render(request, "catalog/index.html", context)
 
 
-# ───── Task Views ─────
 
 class TaskListView(generic.ListView):
     model = Task
@@ -43,7 +42,6 @@ class TaskDeleteView(generic.DeleteView):
     success_url = reverse_lazy("task-list")
 
 
-# ───── Worker Views ─────
 
 class WorkerListView(generic.ListView):
     model = Worker
