@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import generic
-from .models import Task, Worker
+
+from .models import Task, Worker, Position, TaskType
 
 
 def index(request):
@@ -8,9 +10,12 @@ def index(request):
         "task_count": Task.objects.count(),
         "worker_count": Worker.objects.count(),
         "completed_tasks": Task.objects.filter(is_completed=True).count(),
+        "task_types_count": TaskType.objects.count(),
     }
     return render(request, "catalog/index.html", context)
 
+
+# ───── Task Views ─────
 
 class TaskListView(generic.ListView):
     model = Task
@@ -21,6 +26,25 @@ class TaskDetailView(generic.DetailView):
     model = Task
 
 
+class TaskCreateView(generic.CreateView):
+    model = Task
+    fields = "__all__"
+    success_url = reverse_lazy("task-list")
+
+
+class TaskUpdateView(generic.UpdateView):
+    model = Task
+    fields = "__all__"
+    success_url = reverse_lazy("task-list")
+
+
+class TaskDeleteView(generic.DeleteView):
+    model = Task
+    success_url = reverse_lazy("task-list")
+
+
+# ───── Worker Views ─────
+
 class WorkerListView(generic.ListView):
     model = Worker
     paginate_by = 10
@@ -28,3 +52,20 @@ class WorkerListView(generic.ListView):
 
 class WorkerDetailView(generic.DetailView):
     model = Worker
+
+
+class WorkerCreateView(generic.CreateView):
+    model = Worker
+    fields = ("username", "first_name", "last_name", "email", "position", "password")
+    success_url = reverse_lazy("worker-list")
+
+
+class WorkerUpdateView(generic.UpdateView):
+    model = Worker
+    fields = ("username", "first_name", "last_name", "email", "position")
+    success_url = reverse_lazy("worker-list")
+
+
+class WorkerDeleteView(generic.DeleteView):
+    model = Worker
+    success_url = reverse_lazy("worker-list")
