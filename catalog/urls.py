@@ -7,7 +7,6 @@ urlpatterns = [
     # Auth
     path("login/", views.WorkerLoginView.as_view(), name="login"),
     path("logout/", views.WorkerLogoutView.as_view(), name="logout"),
-    path("register/", views.WorkerCreateView.as_view(), name="register"),
 
     # Tasks
     path("tasks/", views.TaskListView.as_view(), name="task-list"),
