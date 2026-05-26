@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
-from .forms import TaskForm
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Task, Worker, Position, TaskType
+from .models import Task, Worker, TaskType
+from .forms import TaskForm, WorkerCreationForm, WorkerUpdateForm
 
 
 def index(request):
@@ -16,55 +18,68 @@ def index(request):
     return render(request, "catalog/index.html", context)
 
 
+# Auth Views
 
-class TaskListView(generic.ListView):
+class WorkerLoginView(LoginView):
+    template_name = "catalog/login.html"
+    redirect_authenticated_user = True
+
+
+class WorkerLogoutView(LogoutView):
+    next_page = "login"
+
+
+# Task Views
+
+class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     paginate_by = 10
 
 
-class TaskDetailView(generic.DetailView):
+class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
 
 
-class TaskCreateView(generic.CreateView):
-    model = Task
-    form_class = TaskForm
-    success_url = reverse_lazy("task-list")
-
-
-class TaskUpdateView(generic.UpdateView):
+class TaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
     form_class = TaskForm
     success_url = reverse_lazy("task-list")
 
 
-class TaskDeleteView(generic.DeleteView):
+class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Task
+    form_class = TaskForm
+    success_url = reverse_lazy("task-list")
+
+
+class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Task
     success_url = reverse_lazy("task-list")
 
 
+# Worker Views
 
-class WorkerListView(generic.ListView):
+class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
     paginate_by = 10
 
 
-class WorkerDetailView(generic.DetailView):
+class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
 
 
 class WorkerCreateView(generic.CreateView):
     model = Worker
-    fields = ("username", "first_name", "last_name", "email", "position", "password")
-    success_url = reverse_lazy("worker-list")
+    form_class = WorkerCreationForm
+    success_url = reverse_lazy("login")
 
 
-class WorkerUpdateView(generic.UpdateView):
+class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Worker
-    fields = ("username", "first_name", "last_name", "email", "position")
+    form_class = WorkerUpdateForm
     success_url = reverse_lazy("worker-list")
 
 
-class WorkerDeleteView(generic.DeleteView):
+class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Worker
     success_url = reverse_lazy("worker-list")
