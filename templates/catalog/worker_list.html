@@ -2,12 +2,21 @@
 <html>
 <body>
   <h1>Workers</h1>
-  <a href="{% url 'worker-create' %}">+ New Worker</a>
+
+  {% if request.user.position.name == "Manager" %}
+    <a href="{% url 'worker-create' %}">+ New Worker</a>
+  {% endif %}
+
   <ul>
     {% for worker in object_list %}
       <li>
         <a href="{% url 'worker-detail' worker.pk %}">{{ worker }}</a>
         — {{ worker.position }}
+
+        {% if request.user.position.name == "Manager" %}
+          | <a href="{% url 'worker-update' worker.pk %}">Edit</a>
+          | <a href="{% url 'worker-delete' worker.pk %}">Delete</a>
+        {% endif %}
       </li>
     {% endfor %}
   </ul>

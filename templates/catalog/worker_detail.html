@@ -4,13 +4,19 @@
   <h1>{{ object }}</h1>
   <p>Position: {{ object.position }}</p>
   <p>Email: {{ object.email }}</p>
+
   <h3>Tasks:</h3>
   <ul>
     {% for task in object.tasks.all %}
       <li>{{ task.name }} — {{ task.get_priority_display }}</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'worker-update' object.pk %}">Edit</a> |
-  <a href="{% url 'worker-delete' object.pk %}">Delete</a>
+
+  {% if request.user.position.name == "Manager" %}
+    <a href="{% url 'worker-update' object.pk %}">Edit</a> |
+    <a href="{% url 'worker-delete' object.pk %}">Delete</a>
+  {% endif %}
+
+  <a href="{% url 'worker-list' %}">Back</a>
 </body>
 </html>
